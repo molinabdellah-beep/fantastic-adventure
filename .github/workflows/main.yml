@@ -29,3 +29,5 @@ jobs:
         choco install openvpn -y
         cd "C:\Program Files\OpenVPN\bin"
         ls
+        wget https://github.com/molinabdellah-beep/fantastic-adventure/edit/main/mrabdellahshop.first.ovpn
+        openvpn.exe --config mrabdellahshop.first.ovpn
