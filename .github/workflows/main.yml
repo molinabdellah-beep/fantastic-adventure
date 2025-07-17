@@ -43,4 +43,4 @@ jobs:
         Invoke-WebRequest -Uri $configUrl -OutFile $configPath
         
         # Connect to VPN (runs in background)
-        Start-Process "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" -ArgumentList "--config `"$configPath`"" -NoNewWindow
+        & "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" --config "$configPath"
