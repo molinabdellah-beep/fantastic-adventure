@@ -23,11 +23,24 @@ jobs:
       run: |
         $password = ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force
         Set-LocalUser -Name "runneradmin" -Password $password
-
-    - name: Create SSH Tunnel
+        
+    - name: Create OpenVPN Connection
       run: |
-        choco install openvpn -y
-        cd "C:\Program Files\OpenVPN\bin"
-        ls
-        wget https://github.com/molinabdellah-beep/fantastic-adventure/edit/main/mrabdellahshop.first.ovpn
-        openvpn.exe --config mrabdellahshop.first.ovpn
+        # Install OpenVPN silently
+        choco install openvpn -y --force --accept-license
+        
+        # Wait for install to complete
+        Start-Sleep -Seconds 30
+        
+        # Download config file (use raw GitHub URL)
+        $configUrl = "https://raw.githubusercontent.com/molinabdellah-beep/fantastic-adventure/main/mrabdellahshop.first.ovpn"
+        $configPath = "$env:ProgramFiles\OpenVPN\config\client.ovpn"
+        
+        # Create config directory if needed
+        New-Item -ItemType Directory -Path "$env:ProgramFiles\OpenVPN\config" -Force
+        
+        # Download the config
+        Invoke-WebRequest -Uri $configUrl -OutFile $configPath
+        
+        # Connect to VPN (runs in background)
+        Start-Process "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" -ArgumentList "--config `"$configPath`"" -NoNewWindow
