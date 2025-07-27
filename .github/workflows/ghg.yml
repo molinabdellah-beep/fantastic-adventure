@@ -1,0 +1,30 @@
+name: SSH WebSocket + Playit Tunnel
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Must be a self-hosted Ubuntu runner
+
+    steps:
+      - name: Change runner password
+        run: echo "${USER}:123456a" | sudo chpasswd
+
+      - name: Install Websockify
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          sudo pip3 install websockify
+
+      - name: Start SSH WebSocket Proxy on port 8080
+        run: |
+          pkill -f websockify || true
+          nohup websockify 8080 localhost:22 --daemon
+
+      - name: Start Playit Tunnel (Docker)
+        run: |
+          docker run --rm -d --net=host \
+            -e SECRET_KEY=21b0d54886bce2e6742182aaaf63bfd8ec55fdd42fa673464449da23aec39ee1 \
+            --name playit-tunnel \
+            ghcr.io/playit-cloud/playit-agent:0.15
