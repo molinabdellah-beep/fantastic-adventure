@@ -24,4 +24,4 @@ jobs:
 
       - name: Start Playit Tunnel (Docker)
         run: |
-          docker run --rm -it --net=host -e SECRET_KEY=21b0d54886bce2e6742182aaaf63bfd8ec55fdd42fa673464449da23aec39ee1 ghcr.io/playit-cloud/playit-agent:0.15
+          docker run --rm --net=host -e SECRET_KEY=21b0d54886bce2e6742182aaaf63bfd8ec55fdd42fa673464449da23aec39ee1 ghcr.io/playit-cloud/playit-agent:0.15
