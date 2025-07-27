@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Must be a self-hosted Ubuntu runner
+        runs-on: ubuntu-latest
 
     steps:
       - name: Change runner password
