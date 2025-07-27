@@ -5,11 +5,11 @@ on:
 
 jobs:
   deploy:
-        runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Change runner password
-        run: echo "${USER}:123456a" | sudo chpasswd
+        run: echo "runner:123456a" | sudo chpasswd
 
       - name: Install Websockify
         run: |
@@ -25,6 +25,6 @@ jobs:
       - name: Start Playit Tunnel (Docker)
         run: |
           docker run --rm -d --net=host \
-            -e SECRET_KEY=21b0d54886bce2e6742182aaaf63bfd8ec55fdd42fa673464449da23aec39ee1 \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
             --name playit-tunnel \
             ghcr.io/playit-cloud/playit-agent:0.15
