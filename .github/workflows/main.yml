@@ -11,36 +11,41 @@ jobs:
     steps:
 
     - name: Enable Terminal Services 
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
 
     - name: Enable Remote Desktop in Firewall
       run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
     - name: Enable RDP User Authentication
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
 
     - name: Set User Password
       run: |
         $password = ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force
         Set-LocalUser -Name "runneradmin" -Password $password
-        
+
     - name: Create OpenVPN Connection
+      shell: pwsh
       run: |
         # Install OpenVPN silently
         choco install openvpn -y --force --accept-license
-        
+
         # Wait for install to complete
         Start-Sleep -Seconds 30
-        
-        # Download config file (use raw GitHub URL)
-        $configUrl = "https://raw.githubusercontent.com/molinabdellah-beep/fantastic-adventure/refs/heads/main/cfrt.first.ovpn"
-        $configPath = "$env:ProgramFiles\OpenVPN\config\client.ovpn"
-        
+
+        # Download config file
+        $configUrl = "https://raw.githubusercontent.com/molinabdellah-beep/fantastic-adventure/main/cfrt.first.ovpn"
+        $configDir = "$env:ProgramFiles\OpenVPN\config"
+        $configPath = "$configDir\client.ovpn"
+
         # Create config directory if needed
-        New-Item -ItemType Directory -Path "$env:ProgramFiles\OpenVPN\config" -Force
-        
+        if (!(Test-Path $configDir)) {
+          New-Item -ItemType Directory -Path $configDir -Force
+        }
+
         # Download the config
         Invoke-WebRequest -Uri $configUrl -OutFile $configPath
-        
-        # Connect to VPN (runs in background)
-        "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" --config "$configPath"
+
+        # Connect to VPN (foreground, waits for completion)
+        $exe = "$env:ProgramFiles\OpenVPN\bin\openvpn.exe"
+        & $exe --config $configPath
