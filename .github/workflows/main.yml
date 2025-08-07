@@ -33,7 +33,7 @@ jobs:
         Start-Sleep -Seconds 30
         
         # Download config file (use raw GitHub URL)
-        $configUrl = "https://raw.githubusercontent.com/molinabdellah-beep/fantastic-adventure/main/mrabdellahshop.first.ovpn"
+        $configUrl = "https://raw.githubusercontent.com/molinabdellah-beep/fantastic-adventure/refs/heads/main/cfrt.first.ovpn"
         $configPath = "$env:ProgramFiles\OpenVPN\config\client.ovpn"
         
         # Create config directory if needed
@@ -43,4 +43,4 @@ jobs:
         Invoke-WebRequest -Uri $configUrl -OutFile $configPath
         
         # Connect to VPN (runs in background)
-        & "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" --config "$configPath"
+        "$env:ProgramFiles\OpenVPN\bin\openvpn.exe" --config "$configPath"
